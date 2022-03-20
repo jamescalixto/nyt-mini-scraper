@@ -47,7 +47,7 @@ def secs_to_time(s):
         return "{}:{}".format(mins, str(secs).zfill(2))
 
 
-def file_to_object():
+def file_to_object(filename=filename):
     """Read stored data and return an dict of date:time pairs, where the time values
     are also dicts of name:secs pairs."""
     obj = {}
@@ -59,7 +59,7 @@ def file_to_object():
     return obj
 
 
-def object_to_file(obj):
+def object_to_file(obj, filename=filename):
     """Write dict of date:{name:secs} to file."""
     with open(filename, "w") as f:
         for date, times in obj.items():

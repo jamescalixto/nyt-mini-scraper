@@ -91,7 +91,14 @@ def get_wins_over_dates(dates):
     return wins
 
 
-def day_message(d=date.today()):
+def get_most_recent_fetched_date():
+    """Get the date object representing of the most recent fetched date in stored data."""
+    obj = utils.file_to_object()
+    dates = [utils.parse_date(d) for d in obj.keys()]
+    return max(dates)
+
+
+def day_message(d):
     """Post a message summarizing times for a single day."""
     data = utils.file_to_object()
     d_str = utils.format_date(d)
@@ -126,7 +133,7 @@ def interval_message(lines, dates):
     return "\n".join(lines)
 
 
-def build_and_post_messages(d=date.today(), backfill=False):
+def build_and_post_messages(d=get_most_recent_fetched_date(), backfill=False):
     """Post messages summarizing the given day, and possibly some intervals as well.
     Takes in an optional backfill parameter to delay the messages by 10 minutes to make
     Discord backfills look nicer."""

@@ -133,10 +133,14 @@ def interval_message(lines, dates):
     return "\n".join(lines)
 
 
-def build_and_post_messages(d=get_most_recent_fetched_date(), backfill=False):
+def build_and_post_messages(
+    d=get_most_recent_fetched_date(),
+    message_delay=360,  # time between posting messages, in seconds.
+):
     """Post messages summarizing the given day, and possibly some intervals as well.
     Takes in an optional backfill parameter to delay the messages by 10 minutes to make
-    Discord backfills look nicer."""
+    Discord backfills look nicer. Also can set flags to determine which message(s) to
+    print."""
     messages = [day_message(d)]  # messages to print.
     if is_last_day_of_week(d):
         lines = ["🎉 {} Weekly Champion 🎉".format(d.strftime("%b %-d"))]
@@ -150,7 +154,7 @@ def build_and_post_messages(d=get_most_recent_fetched_date(), backfill=False):
     for index, message in enumerate(messages):
         utils.post_message(message)
         if index != len(messages) - 1:  # build in delay. Makes backfills look nicer.
-            delay = 600 if backfill else 3
+            delay = message_delay
             time.sleep(delay)
 
 
@@ -159,7 +163,8 @@ def backfill_messages():
     for. Does this at an artificially slow rate to make the Discord backfills look
     nicer, as Discord automatically chunks close messages together and messes up the
     formatting."""
+    BACKFILL_MESSAGE_DELAY = 360
     data = utils.file_to_object()
     for d_str in sorted(set(data.keys())):
         d = utils.parse_date(d_str)
-        build_and_post_messages(d, backfill=True)
+        build_and_post_messages(d, message_delay=BACKFILL_MESSAGE_DELAY)

@@ -27,7 +27,7 @@ def login():
     raise ValueError("NYT-S cookie not found")
 
 
-def get_mini_times(cookie):
+def get_leaderboard_times(cookie):
     """Get mini times from the leaderboard as name:seconds key-value pairs. Also return
     the date of the leaderboard.
     Adapted from https://github.com/kyledeanreinford/NYT_Mini_Leaderboard_Scraper."""
@@ -74,9 +74,30 @@ def write_to_file(times, date_str=utils.format_date()):
     utils.object_to_file(obj)
 
 
+def get_stored_times(date_str):
+    """Get stored data for the given date string."""
+    return utils.file_to_object()[date_str]
+
+
+def merge_times(stored_data, new_data):
+    """Merges stored data with new (live fetched) data. Allows for manually editing the
+    file when the leaderboard breaks, without it being overwritten."""
+    merged_data = {
+        player: (
+            stored_data[player]
+            if stored_data.get(player, utils.BIG_NUMBER) != utils.BIG_NUMBER
+            else time
+        )  # if existing data has non-placeholder value, use that instead.
+        for player, time in new_data.items()
+    }
+    return merged_data
+
+
 def fetch_and_save_data():
     """Fetch today's mini times and write to file."""
     cookie = login()
     time.sleep(3)
-    times, date_str = get_mini_times(cookie)
-    write_to_file(times, date_str)
+    times, date_str = get_leaderboard_times(cookie)
+    stored_times = get_stored_times(date_str)
+    merged_times = merge_times(stored_times, times)
+    write_to_file(merged_times, date_str)

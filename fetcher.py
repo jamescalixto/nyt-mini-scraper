@@ -76,7 +76,7 @@ def write_to_file(times, date_str=utils.format_date()):
 
 def get_stored_times(date_str):
     """Get stored data for the given date string."""
-    return utils.file_to_object()[date_str]
+    return utils.file_to_object().get(date_str, {})
 
 
 def merge_times(stored_data, new_data):

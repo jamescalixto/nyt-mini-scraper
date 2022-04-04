@@ -9,6 +9,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fetch", action="store_true", help="Fetch leaderboard data.")
     parser.add_argument("--post", action="store_true", help="Post summaries for today.")
+    parser.add_argument("--date", type=str, help="Date to post summaries for.")
     parser.add_argument(
         "--backfill", action="store_true", help="Post summaries for all days stored."
     )
@@ -21,7 +22,7 @@ if __name__ == "__main__":
         if args.fetch:
             fetch_and_save_data()
         if args.post:
-            build_and_post_messages()
+            build_and_post_messages(utils.parse_date(args.date) if args.date else None)
         if args.backfill:
             backfill_messages()
     except Exception as e:

@@ -22,7 +22,10 @@ if __name__ == "__main__":
         if args.fetch:
             fetch_and_save_data()
         if args.post:
-            build_and_post_messages(utils.parse_date(args.date) if args.date else None)
+            if args.date:
+                build_and_post_messages(utils.parse_date(args.date))
+            else:
+                build_and_post_messages()
         if args.backfill:
             backfill_messages()
     except Exception as e:
